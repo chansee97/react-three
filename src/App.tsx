@@ -1,16 +1,16 @@
-import { useRef, useEffect } from 'react'
-import { Scene } from './components/Scene'
-import { SceneManager } from './utils/SceneManager'
-import './App.css'
+import { useRef, useEffect } from 'react';
+import { IntegratedScene } from './components/scene/IntegratedScene';
+import type { SceneAPI } from './components/scene/types';
+import './App.css';
 
 function App() {
-  // 场景管理器实例的引用
-  const sceneManagerRef = useRef<SceneManager | null>(null);
+  // 场景API实例的引用
+  const sceneAPIRef = useRef<SceneAPI | null>(null);
   
   // 示例：如何获取SceneManager实例并使用它
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (sceneManagerRef.current) {
+      if (sceneAPIRef.current) {
         // 添加一些障碍物示例
         const obstacles = [
           [5, 5], [5, 6], [5, 7], [6, 7], [7, 7],
@@ -18,7 +18,7 @@ function App() {
         ];
         
         obstacles.forEach(([x, y]) => {
-          sceneManagerRef.current?.addObstacle(x, y);
+          sceneAPIRef.current?.addObstacle(x, y);
         });
       }
     }, 1000);
@@ -26,19 +26,22 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
   
-  // 当Scene组件挂载时获取SceneManager实例
-  const handleSceneReady = (manager: SceneManager) => {
-    sceneManagerRef.current = manager;
+  // 当IntegratedScene组件挂载时获取SceneAPI实例
+  const handleSceneReady = (api: SceneAPI) => {
+    sceneAPIRef.current = api;
+    console.log('场景初始化完成，获取到SceneAPI');
   };
 
   return (
-    <div className="app">
-      <Scene 
+    <div className="app" style={{ width: '100%', height: '100vh' }}>
+      <IntegratedScene 
         initialConfig={{
           gridSize: 20,
           divisions: 20,
-          baseColor: "#444444",
-          hoverColor: "#00aaff"
+          baseColor: "#a0a0a0",
+          hoverColor: "#c0c0c0",
+          groundSize: [20, 20],
+          groundPosition: [0, -0.1, 0]
         }}
         showControls={true}
         onReady={handleSceneReady}
