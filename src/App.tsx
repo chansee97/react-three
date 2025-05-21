@@ -1,53 +1,59 @@
-import { useRef, useEffect } from 'react';
-import { IntegratedScene } from './components/scene/IntegratedScene';
-import type { SceneAPI } from './components/scene/types';
+import { useRef, useEffect, useState } from 'react';
+import { createSceneInElement } from './scene/ThreeScene';
+import type { SceneAPI } from './scene/types';
+import { ControlPanel } from './scene/ui';
 import './App.css';
 
 function App() {
+  // 场景容器引用
+  const containerRef = useRef<HTMLDivElement>(null);
   // 场景API实例的引用
-  const sceneAPIRef = useRef<SceneAPI | null>(null);
+  const [sceneAPI, setSceneAPI] = useState<SceneAPI | null>(null);
   
-  // 示例：如何获取SceneManager实例并使用它
+  // 初始化场景
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (sceneAPIRef.current) {
-        // 添加一些障碍物示例
-        const obstacles = [
-          [5, 5], [5, 6], [5, 7], [6, 7], [7, 7],
-          [12, 12], [12, 13], [13, 12], [14, 12]
-        ];
-        
-        obstacles.forEach(([x, y]) => {
-          sceneAPIRef.current?.addObstacle(x, y);
+    if (containerRef.current && !sceneAPI) {
+      try {
+        console.log('正在初始化Three.js场景...');
+        // 通过DOM元素创建场景，使用自定义配置
+        const api = createSceneInElement(containerRef.current, {
+          groundSize: [20, 30],
+          groundPosition: [0, -0.1, 0]
         });
+        
+        // 保存API引用
+        setSceneAPI(api);
+        console.log('场景初始化完成，获取到SceneAPI');
+      } catch (error) {
+        console.error('Three.js场景初始化失败:', error);
       }
-    }, 1000);
+    }
     
-    return () => clearTimeout(timer);
+    // 清理函数
+    return () => {
+      if (sceneAPI) {
+        try {
+          console.log('正在清理Three.js场景...');
+          // 调用API的dispose方法
+          sceneAPI.dispose();
+          setSceneAPI(null);
+          console.log('Three.js场景清理完成');
+        } catch (error) {
+          console.error('Three.js场景清理失败:', error);
+        }
+      }
+    };
   }, []);
-  
-  // 当IntegratedScene组件挂载时获取SceneAPI实例
-  const handleSceneReady = (api: SceneAPI) => {
-    sceneAPIRef.current = api;
-    console.log('场景初始化完成，获取到SceneAPI');
-  };
 
   return (
-    <div className="app" style={{ width: '100%', height: '100vh' }}>
-      <IntegratedScene 
-        initialConfig={{
-          gridSize: 20,
-          divisions: 20,
-          baseColor: "#a0a0a0",
-          hoverColor: "#c0c0c0",
-          groundSize: [20, 20],
-          groundPosition: [0, -0.1, 0]
-        }}
-        showControls={true}
-        onReady={handleSceneReady}
+    <div className="app">
+      <div 
+        ref={containerRef} 
+        className="scene-container"
       />
+      {sceneAPI && <ControlPanel sceneAPI={sceneAPI} />}
     </div>
-  )
+  );
 }
 
-export default App
+export default App; 

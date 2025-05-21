@@ -170,10 +170,11 @@ p {
 
 /* 场景容器样式 */
 .scene-container {
-  position: relative;
   width: 100%;
-  height: calc(100vh - 80px);
-  overflow: hidden;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /* 错误容器 */

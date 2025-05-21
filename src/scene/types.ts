@@ -2,20 +2,12 @@ import * as THREE from 'three';
 
 // 场景配置接口
 export interface SceneConfig {
-  gridSize: number;
-  divisions: number;
-  baseColor: string;
-  startColor?: string;
-  endColor?: string;
-  pathColor?: string;
-  obstacleColor?: string;
-  hoverColor?: string;
-  groundSize?: [number, number];
+  groundSize: [number, number]; // 地面和网格大小
   groundPosition?: [number, number, number];
 }
 
 // 网格状态类型
-export type TileStatus = 'default' | 'start' | 'end' | 'path' | 'obstacle' | 'hover';
+export type TileStatus = 'default' | 'start' | 'end' | 'obstacle';
 
 // 场景API接口
 export interface SceneAPI {
@@ -42,4 +34,11 @@ export interface SceneAPI {
   gridToWorldPosition: (gridX: number, gridY: number, height?: number) => [number, number, number];
   worldToGridPosition: (x: number, z: number) => [number, number];
   isInitialized: () => boolean;
+  dispose: () => void; // 添加释放资源的方法
+  
+  // 辅助器控制
+  toggleAxesHelper: () => void;
+  toggleLightHelper: () => void;
+  toggleGridHelper: () => void;
+  getHelperStatus: () => { axesHelper: boolean, lightHelper: boolean, gridHelper: boolean };
 }

@@ -1,7 +1,7 @@
-import { StrictMode } from 'react'
+import React, { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
+import App from './App'
 
 // 获取根元素
 const rootElement = document.getElementById('root');
@@ -16,7 +16,7 @@ try {
   root.render(
     <StrictMode>
       <App />
-    </StrictMode>,
+    </StrictMode>
   );
 } catch (error) {
   console.error('React应用渲染失败:', error);

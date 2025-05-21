@@ -1,54 +1,72 @@
-# React + TypeScript + Vite
+# Three.js 场景
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+这是一个使用纯Three.js实现的3D场景，提供了网格寻路演示功能。
 
-Currently, two official plugins are available:
+## 功能特性
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 3D网格场景渲染
+- A*寻路算法实现
+- 交互式设置起点、终点和障碍物
+- 自动计算并显示最短路径
+- 场景控制面板
 
-## Expanding the ESLint configuration
+## 技术栈
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Three.js
+- TypeScript
+- Vite
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 项目结构
+
+- `src/main.ts` - 应用入口点
+- `src/scene.ts` - 场景渲染和交互管理
+- `src/sceneManager.ts` - 场景状态和寻路逻辑
+
+## 使用方法
+
+### 安装依赖
+
+```bash
+npm install
+# 或
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 开发模式
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm run dev
+# 或
+pnpm dev
 ```
+
+### 构建项目
+
+```bash
+npm run build
+# 或
+pnpm build
+```
+
+## 交互指南
+
+- **左键点击**: 设置起点
+- **右键点击**: 设置终点
+- **中键点击**: 切换障碍物
+
+## 控制面板
+
+- **清除路径**: 仅清除当前路径
+- **清除所有**: 清除路径和障碍物
+- **添加障碍物示例**: 添加预设的障碍物示例
+- **显示/隐藏网格**: 切换网格辅助线显示
+- **显示/隐藏坐标轴**: 切换坐标轴辅助线显示
+
+## 从React Three Fiber迁移
+
+本项目原先使用React Three Fiber实现，现已迁移到纯Three.js实现。主要变化：
+
+1. 移除了React相关依赖
+2. 使用原生DOM API替代React组件
+3. 使用命令式Three.js API替代声明式React Three Fiber
+4. 场景管理逻辑保持不变，但实现方式改为原生JavaScript/TypeScript
