@@ -1,72 +1,73 @@
-# Three.js 场景
+# React + Three.js 基础示例
 
-这是一个使用纯Three.js实现的3D场景，提供了网格寻路演示功能。
+这是一个使用React和Three.js创建的基础3D场景示例项目。
 
-## 功能特性
+## 功能特点
 
-- 3D网格场景渲染
-- A*寻路算法实现
-- 交互式设置起点、终点和障碍物
-- 自动计算并显示最短路径
-- 场景控制面板
-
-## 技术栈
-
-- Three.js
-- TypeScript
-- Vite
+- 使用React管理UI组件
+- Three.js处理3D渲染
+- 包含一个可旋转的3D立方体
+- 支持轨道控制器进行场景交互
+- 响应式设计，自动适应窗口大小变化
 
 ## 项目结构
 
-- `src/main.ts` - 应用入口点
-- `src/scene.ts` - 场景渲染和交互管理
-- `src/sceneManager.ts` - 场景状态和寻路逻辑
+```
+src/
+├── components/         # React组件
+│   └── ThreeCanvas.tsx # Three.js画布组件
+├── three-lib/          # Three.js相关代码
+│   ├── ThreeScene.ts   # Three.js场景管理类
+│   └── index.ts        # 导出文件
+├── App.css             # 应用样式
+├── App.tsx             # 主应用组件
+├── main.tsx            # 应用入口
+└── style.css           # 全局样式
+```
 
-## 使用方法
+## 开发环境设置
 
 ### 安装依赖
 
 ```bash
 npm install
 # 或
+yarn
+# 或
 pnpm install
 ```
 
-### 开发模式
+### 运行开发服务器
 
 ```bash
 npm run dev
 # 或
+yarn dev
+# 或
 pnpm dev
 ```
 
-### 构建项目
+### 构建生产版本
 
 ```bash
 npm run build
 # 或
+yarn build
+# 或
 pnpm build
 ```
 
-## 交互指南
+## 扩展建议
 
-- **左键点击**: 设置起点
-- **右键点击**: 设置终点
-- **中键点击**: 切换障碍物
+- 添加更多的3D模型和场景元素
+- 实现更复杂的交互和动画
+- 添加材质和纹理
+- 集成物理引擎
+- 添加后期处理效果
 
-## 控制面板
+## 技术栈
 
-- **清除路径**: 仅清除当前路径
-- **清除所有**: 清除路径和障碍物
-- **添加障碍物示例**: 添加预设的障碍物示例
-- **显示/隐藏网格**: 切换网格辅助线显示
-- **显示/隐藏坐标轴**: 切换坐标轴辅助线显示
-
-## 从React Three Fiber迁移
-
-本项目原先使用React Three Fiber实现，现已迁移到纯Three.js实现。主要变化：
-
-1. 移除了React相关依赖
-2. 使用原生DOM API替代React组件
-3. 使用命令式Three.js API替代声明式React Three Fiber
-4. 场景管理逻辑保持不变，但实现方式改为原生JavaScript/TypeScript
+- React
+- TypeScript
+- Three.js
+- Vite

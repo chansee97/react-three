@@ -1,241 +1,55 @@
-body {
-  margin: 0;
-  padding: 0;
-}
-
 .app {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  color: #333;
-  background-color: #f5f5f5;
-  overflow: hidden;
-  position: relative;
+  background-color: #1a1a1a;
 }
 
-.canvas-container {
-  width: 100%;
-  height: 75vh;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  position: relative;
+.app-header {
+  background-color: #282c34;
+  color: white;
+  padding: 1rem;
+  text-align: center;
 }
 
 .controls {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  margin-top: 1rem;
   display: flex;
-  gap: 10px;
-  z-index: 100;
+  justify-content: center;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
 }
 
 .controls button {
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: #61dafb;
+  color: #282c34;
   border: none;
-  padding: 8px 12px;
+  padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
+  font-weight: bold;
+  font-size: 16px;
+  transition: all 0.3s ease;
 }
 
 .controls button:hover {
-  background-color: rgba(255, 255, 255, 0.9);
-  transform: translateY(-2px);
+  background-color: #4fa8c9;
+  transform: scale(1.05);
 }
 
-.info {
-  position: absolute;
-  background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 10px;
-  bottom: 20px;
-  left: 20px;
-  font-size: 14px;
-  z-index: 100;
-  max-width: 300px;
+.controls button:active {
+  transform: scale(0.95);
 }
 
-.info ul {
-  margin: 5px 0 0 0;
-  padding-left: 20px;
-}
-
-.info li {
-  margin-bottom: 4px;
-}
-
-button {
-  background-color: #e0e0e0;
-  color: #333;
-  border: 1px solid #999;
-  padding: 8px 15px;
-  border-radius: 2px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-button:hover {
-  background-color: #d0d0d0;
-}
-
-button.active {
-  background-color: #1677ff;
-  font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-p {
-  margin: 5px 0;
-  font-size: 14px;
-  color: #666;
-  text-align: center;
-}
-
-/* 加载动画样式 */
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.loading {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  color: #333;
-}
-
-.loading::before {
-  content: "";
-  display: block;
-  width: 30px;
-  height: 30px;
-  margin-bottom: 15px;
-  border: 3px solid #ddd;
-  border-top-color: #2196f3;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-/* 自定义组件控制面板 */
-.custom-controls {
-  background-color: #f0f0f0;
-  padding: 15px 20px;
-  border-bottom: 1px solid #ddd;
-}
-
-.custom-controls h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  color: #333;
-  font-size: 16px;
-}
-
-.button-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.button-group button {
-  padding: 8px 15px;
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 14px;
-}
-
-.button-group button:hover {
-  background-color: #0d8bf2;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-/* 场景容器样式 */
-.scene-container {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-/* 错误容器 */
-.error-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  text-align: center;
-  z-index: 1000;
-}
-
-.error-container h2 {
-  color: #e53935;
-  margin-top: 0;
-}
-
-.error-container p {
-  margin: 10px 0 20px;
-  color: #333;
-  font-size: 16px;
-}
-
-.error-container button {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.error-container button:hover {
-  background-color: #45a049;
-}
-
-/* 场景切换器 */
-.scene-switcher {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
-}
-
-.scene-switcher button {
-  background-color: rgba(33, 150, 243, 0.8);
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
-
-.scene-switcher button:hover {
-  background-color: rgba(33, 150, 243, 1);
+.app-main {
+  flex: 1;
+  position: relative;
 }

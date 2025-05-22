@@ -1,7 +1,7 @@
 {
-  "name": "three-scene",
+  "name": "react-three-basic",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,10 +11,14 @@
   },
   "dependencies": {
     "@types/three": "^0.176.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "three": "^0.176.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
     "eslint": "^9.25.0",
     "globals": "^16.0.0",
     "typescript": "~5.8.3",
