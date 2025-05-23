@@ -12,7 +12,6 @@ export class ThreeScene {
   private renderer: Renderer;
   private controls: CameraControls;
   private objectFactory: ObjectFactory;
-  private cube: THREE.Mesh;
   private animationId: number | null = null;
   
   // FPS计算相关
@@ -20,6 +19,14 @@ export class ThreeScene {
   private lastFpsUpdateTime = 0;
   private currentFps = 0;
   private fpsCallback: ((fps: number) => void) | null = null;
+  
+  // Helper对象
+  private axesHelper: THREE.AxesHelper;
+  private gridHelper: THREE.GridHelper | null = null;
+  private polarGridHelper: THREE.PolarGridHelper | null = null;
+  private directionalLight: THREE.DirectionalLight;
+  private directionalLightHelper: THREE.DirectionalLightHelper | null = null;
+  private cameraHelper: THREE.CameraHelper | null = null;
 
   constructor(
     container: HTMLElement,
@@ -59,22 +66,18 @@ export class ThreeScene {
     // 创建对象工厂（使用提供的实例或创建新实例）
     this.objectFactory = objectFactoryInstance || new ThreeObjectFactory();
 
-    // 创建一个简单的立方体
-    this.cube = this.objectFactory.createCube();
-    this.scene.add(this.cube);
-
     // 添加环境光和方向光
     const ambientLight = this.objectFactory.createLight('ambient');
     this.scene.add(ambientLight);
 
-    const directionalLight = this.objectFactory.createLight('directional', {
+    this.directionalLight = this.objectFactory.createLight('directional', {
       position: { x: 1, y: 1, z: 1 }
-    });
-    this.scene.add(directionalLight);
+    }) as THREE.DirectionalLight;
+    this.scene.add(this.directionalLight);
 
-    // 添加坐标轴辅助
-    const axesHelper = this.objectFactory.createAxesHelper();
-    this.scene.add(axesHelper);
+    // 添加坐标轴辅助（默认显示）
+    this.axesHelper = this.objectFactory.createAxesHelper();
+    this.scene.add(this.axesHelper);
 
     // 开始动画循环
     this.animate();
@@ -86,14 +89,18 @@ export class ThreeScene {
   private animate = () => {
     this.animationId = requestAnimationFrame(this.animate);
 
-    // 旋转立方体
-    if (this.cube) {
-      this.cube.rotation.x += 0.01;
-      this.cube.rotation.y += 0.01;
-    }
-
     // 更新控制器
     this.controls.update();
+
+    // 更新灯光助手（如果存在）
+    if (this.directionalLightHelper) {
+      this.directionalLightHelper.update();
+    }
+
+    // 更新相机助手（如果存在）
+    if (this.cameraHelper) {
+      this.cameraHelper.update();
+    }
 
     // 渲染场景
     this.renderer.render(this.scene, this.camera);
@@ -124,26 +131,25 @@ export class ThreeScene {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(container.clientWidth, container.clientHeight);
   };
-
-  // 更新立方体颜色的方法
-  public updateCubeColor(color: number): void {
-    if (this.cube && this.cube.material instanceof THREE.MeshStandardMaterial) {
-      this.cube.material.color.set(color);
-    }
-  }
   
   // 重置场景方法
   public resetScene(): void {
+    console.log('重置相机位置和控制器');
+    
+    // 销毁旧的控制器
+    this.controls.dispose();
+    
     // 重置相机位置
     this.camera.position.set(0, 0, 3);
-    this.camera.rotation.set(0, 0, 0);
+    this.camera.lookAt(0, 0, 0);
+    this.camera.updateProjectionMatrix();
     
-    // 重置立方体
-    if (this.cube) {
-      this.cube.position.set(0, 0, 0);
-      this.cube.rotation.set(0, 0, 0);
-      this.cube.scale.set(1, 1, 1);
-    }
+    // 重新创建控制器
+    const domElement = this.renderer.getDomElement();
+    this.controls = new OrbitControlsAdapter(this.camera, domElement);
+    this.controls.setEnableDamping(true);
+    
+    console.log('相机位置已重置:', this.camera.position);
   }
   
   // 注册FPS回调
@@ -156,6 +162,60 @@ export class ThreeScene {
     return this.currentFps;
   }
 
+  // 控制坐标轴辅助显示
+  public toggleAxesHelper(visible: boolean): void {
+    this.axesHelper.visible = visible;
+  }
+
+  // 控制网格辅助显示
+  public toggleGridHelper(visible: boolean): void {
+    if (visible && !this.gridHelper) {
+      this.gridHelper = this.objectFactory.createGridHelper();
+      this.scene.add(this.gridHelper);
+    } else if (!visible && this.gridHelper) {
+      this.scene.remove(this.gridHelper);
+      this.gridHelper = null;
+    }
+  }
+
+  // 控制极坐标网格辅助显示
+  public togglePolarGridHelper(visible: boolean): void {
+    if (visible && !this.polarGridHelper) {
+      this.polarGridHelper = this.objectFactory.createPolarGridHelper();
+      this.scene.add(this.polarGridHelper);
+    } else if (!visible && this.polarGridHelper) {
+      this.scene.remove(this.polarGridHelper);
+      this.polarGridHelper = null;
+    }
+  }
+
+  // 控制方向光辅助显示
+  public toggleDirectionalLightHelper(visible: boolean): void {
+    if (visible && !this.directionalLightHelper) {
+      this.directionalLightHelper = this.objectFactory.createDirectionalLightHelper(this.directionalLight);
+      this.scene.add(this.directionalLightHelper);
+    } else if (!visible && this.directionalLightHelper) {
+      this.scene.remove(this.directionalLightHelper);
+      this.directionalLightHelper = null;
+    }
+  }
+
+  // 控制相机辅助显示
+  public toggleCameraHelper(visible: boolean): void {
+    if (visible && !this.cameraHelper) {
+      // 创建一个辅助相机来展示
+      const helperCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+      helperCamera.position.set(0, 0, 10);
+      helperCamera.lookAt(0, 0, 0);
+      
+      this.cameraHelper = this.objectFactory.createCameraHelper(helperCamera);
+      this.scene.add(this.cameraHelper);
+    } else if (!visible && this.cameraHelper) {
+      this.scene.remove(this.cameraHelper);
+      this.cameraHelper = null;
+    }
+  }
+
   public dispose() {
     console.log('销毁Three.js场景');
     
@@ -165,17 +225,6 @@ export class ThreeScene {
     }
     
     window.removeEventListener('resize', this.handleResize);
-    
-    // 清理立方体资源
-    if (this.cube) {
-      if (this.cube.geometry) this.cube.geometry.dispose();
-      if (this.cube.material instanceof THREE.Material) {
-        this.cube.material.dispose();
-      } else if (Array.isArray(this.cube.material)) {
-        this.cube.material.forEach(material => material.dispose());
-      }
-      this.scene.remove(this.cube);
-    }
     
     // 清理场景中的所有对象
     while(this.scene.children.length > 0) { 
@@ -192,4 +241,4 @@ export class ThreeScene {
     
     console.log('Three.js场景已销毁');
   }
-} 
+}

@@ -10,10 +10,8 @@ import { DebugPanel } from '../ui';
 
 interface ThreeCanvasProps {
   highPerformance?: boolean;
-  cubeColor?: number;
   showDebugPanel?: boolean;
   onHighPerformanceChange?: (enabled: boolean) => void;
-  onColorChange?: (color: number) => void;
 }
 
 /**
@@ -21,16 +19,20 @@ interface ThreeCanvasProps {
  */
 const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ 
   highPerformance = false,
-  cubeColor = 0xff0000, // 红色
   showDebugPanel = true,
-  onHighPerformanceChange,
-  onColorChange
+  onHighPerformanceChange
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<ThreeScene | null>(null);
   const [fps, setFps] = useState(0);
-  const [currentColor, setCurrentColor] = useState(cubeColor);
   const [highPerformanceMode, setHighPerformanceMode] = useState(highPerformance);
+  
+  // Helper状态
+  const [showAxes, setShowAxes] = useState(true);
+  const [showGrid, setShowGrid] = useState(false);
+  const [showPolarGrid, setShowPolarGrid] = useState(false);
+  const [showLightHelper, setShowLightHelper] = useState(false);
+  const [showCameraHelper, setShowCameraHelper] = useState(false);
   
   // 初始化和重新创建场景
   const createScene = useCallback(() => {
@@ -50,14 +52,21 @@ const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
           containerRef.current,
           highPerformanceMode ? createHighPerformanceRenderer : createStandardRenderer,
           createDampedControls,
-          createColoredObjectFactory(currentColor)
+          createColoredObjectFactory(0xffffff)
         );
         
         // 注册FPS更新回调
         sceneRef.current.onFpsUpdate(setFps);
+        
+        // 应用当前helper状态
+        sceneRef.current.toggleAxesHelper(showAxes);
+        sceneRef.current.toggleGridHelper(showGrid);
+        sceneRef.current.togglePolarGridHelper(showPolarGrid);
+        sceneRef.current.toggleDirectionalLightHelper(showLightHelper);
+        sceneRef.current.toggleCameraHelper(showCameraHelper);
       }
     }, 50); // 短暂延迟，给浏览器时间清理旧的WebGL上下文
-  }, [highPerformanceMode, currentColor]);
+  }, [highPerformanceMode, showAxes, showGrid, showPolarGrid, showLightHelper, showCameraHelper]);
   
   // 初始化场景的effect
   useEffect(() => {
@@ -82,23 +91,45 @@ const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     }
   }, [onHighPerformanceChange]);
   
-  // 处理颜色变化
-  const handleColorChange = useCallback((color: number) => {
-    setCurrentColor(color);
-    
-    // 更新场景中立方体的颜色
+  // 处理helper切换
+  const handleAxesHelperToggle = useCallback((visible: boolean) => {
+    setShowAxes(visible);
     if (sceneRef.current) {
-      sceneRef.current.updateCubeColor(color);
+      sceneRef.current.toggleAxesHelper(visible);
     }
-    
-    // 通知父组件
-    if (onColorChange) {
-      onColorChange(color);
+  }, []);
+  
+  const handleGridHelperToggle = useCallback((visible: boolean) => {
+    setShowGrid(visible);
+    if (sceneRef.current) {
+      sceneRef.current.toggleGridHelper(visible);
     }
-  }, [onColorChange]);
+  }, []);
+  
+  const handlePolarGridHelperToggle = useCallback((visible: boolean) => {
+    setShowPolarGrid(visible);
+    if (sceneRef.current) {
+      sceneRef.current.togglePolarGridHelper(visible);
+    }
+  }, []);
+  
+  const handleLightHelperToggle = useCallback((visible: boolean) => {
+    setShowLightHelper(visible);
+    if (sceneRef.current) {
+      sceneRef.current.toggleDirectionalLightHelper(visible);
+    }
+  }, []);
+  
+  const handleCameraHelperToggle = useCallback((visible: boolean) => {
+    setShowCameraHelper(visible);
+    if (sceneRef.current) {
+      sceneRef.current.toggleCameraHelper(visible);
+    }
+  }, []);
   
   // 重置场景
   const handleReset = useCallback(() => {
+    console.log('ThreeCanvas: 重置场景');
     if (sceneRef.current) {
       sceneRef.current.resetScene();
     }
@@ -120,10 +151,19 @@ const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
           title="Three.js 控制面板"
           fps={fps}
           highPerformance={highPerformanceMode}
-          currentColor={currentColor}
           onHighPerformanceChange={handleHighPerformanceToggle}
-          onColorChange={handleColorChange}
           onReset={handleReset}
+          // Helper控制
+          showAxes={showAxes}
+          showGrid={showGrid}
+          showPolarGrid={showPolarGrid}
+          showLightHelper={showLightHelper}
+          showCameraHelper={showCameraHelper}
+          onAxesHelperChange={handleAxesHelperToggle}
+          onGridHelperChange={handleGridHelperToggle}
+          onPolarGridHelperChange={handlePolarGridHelperToggle}
+          onLightHelperChange={handleLightHelperToggle}
+          onCameraHelperChange={handleCameraHelperToggle}
         />
       )}
     </div>

@@ -255,4 +255,28 @@ input:checked + .toggle-slider:before {
 
 .mode-toggle-button:active {
   background-color: #666666;
+}
+
+/* 辅助工具部分样式 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 10px;
+}
+
+.section-header h4 {
+  margin: 0;
+}
+
+.helper-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.helper-controls .toggle-switch {
+  margin-bottom: 5px;
 } 

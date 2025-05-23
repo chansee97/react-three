@@ -52,21 +52,31 @@ export function createDampedControls(camera: THREE.Camera, domElement: HTMLEleme
  * 创建对象工厂，自定义默认颜色
  */
 export function createColoredObjectFactory(defaultColor: number): ObjectFactory {
+  const factory = new ThreeObjectFactory();
   return {
-    createCube(options) {
-      const factory = new ThreeObjectFactory();
-      return factory.createCube({ 
-        ...options,
-        color: options?.color || defaultColor 
-      });
-    },
     createLight(type, options) {
-      const factory = new ThreeObjectFactory();
       return factory.createLight(type, options);
     },
     createAxesHelper(size) {
-      const factory = new ThreeObjectFactory();
       return factory.createAxesHelper(size);
+    },
+    createGridHelper(size, divisions, colorCenterLine, colorGrid) {
+      return factory.createGridHelper(size, divisions, colorCenterLine, colorGrid);
+    },
+    createPolarGridHelper(radius, sectors, rings, divisions) {
+      return factory.createPolarGridHelper(radius, sectors, rings, divisions);
+    },
+    createBoxHelper(object, color) {
+      return factory.createBoxHelper(object, color || defaultColor);
+    },
+    createCameraHelper(camera) {
+      return factory.createCameraHelper(camera);
+    },
+    createDirectionalLightHelper(light, size) {
+      return factory.createDirectionalLightHelper(light, size);
+    },
+    createSpotLightHelper(light) {
+      return factory.createSpotLightHelper(light);
     }
   };
 } 

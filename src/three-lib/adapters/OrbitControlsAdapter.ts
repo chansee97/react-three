@@ -7,6 +7,7 @@ export class OrbitControlsAdapter implements CameraControls {
 
   constructor(camera: THREE.Camera, domElement: HTMLElement) {
     this.controls = new OrbitControls(camera, domElement);
+    this.saveState();
   }
 
   update(): void {
@@ -19,5 +20,13 @@ export class OrbitControlsAdapter implements CameraControls {
 
   dispose(): void {
     this.controls.dispose();
+  }
+  
+  reset(): void {
+    this.controls.reset();
+  }
+  
+  saveState(): void {
+    this.controls.saveState();
   }
 } 
