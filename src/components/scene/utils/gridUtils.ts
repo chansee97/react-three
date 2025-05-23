@@ -1,4 +1,4 @@
-import { SceneConfig } from '../types';
+import type { SceneConfig } from '../types';
 import * as THREE from 'three';
 
 /**
@@ -10,14 +10,16 @@ export function gridToWorldPosition(
   gridX: number, 
   gridY: number, 
   height: number = 0,
-  config: SceneConfig
+  gridSize: number
 ): [number, number, number] {
-  const { gridSize, divisions } = config;
-  const tileSize = gridSize / divisions;
-  const start = -gridSize / 2 + tileSize / 2;
+  const tileSize = 1; // 每个网格单元为1单位
   
-  const x = start + gridX * tileSize;
-  const z = start + gridY * tileSize;
+  // 计算偏移量，使网格中心与坐标原点对齐
+  const offsetX = -gridSize / 2 + tileSize / 2;
+  const offsetZ = -gridSize / 2 + tileSize / 2;
+  
+  const x = offsetX + gridX * tileSize;
+  const z = offsetZ + gridY * tileSize;
   
   return [x, height, z];
 }
@@ -26,14 +28,16 @@ export function gridToWorldPosition(
 export function worldToGridPosition(
   x: number, 
   z: number,
-  config: SceneConfig
+  gridSize: number
 ): [number, number] {
-  const { gridSize, divisions } = config;
-  const tileSize = gridSize / divisions;
-  const start = -gridSize / 2 + tileSize / 2;
+  const tileSize = 1; // 每个网格单元为1单位
   
-  const gridX = Math.round((x - start) / tileSize);
-  const gridY = Math.round((z - start) / tileSize);
+  // 计算偏移量，使网格中心与坐标原点对齐
+  const offsetX = -gridSize / 2 + tileSize / 2;
+  const offsetZ = -gridSize / 2 + tileSize / 2;
+  
+  const gridX = Math.round((x - offsetX) / tileSize);
+  const gridY = Math.round((z - offsetZ) / tileSize);
   
   return [gridX, gridY];
 }
@@ -41,14 +45,24 @@ export function worldToGridPosition(
 // 计算物体覆盖的网格坐标
 export function calculateObjectGridPositions(
   object: THREE.Mesh,
-  config: SceneConfig
+  config?: SceneConfig
 ): [number, number][] {
+  if (!config) {
+    // 如果没有提供配置，使用默认值
+    config = {
+      groundSize: [20, 20],
+    };
+  }
+  
   // 获取物体的世界坐标
   const worldPos = object.position.toArray();
   const coveredGridPositions: [number, number][] = [];
   
   // 根据物体类型计算其覆盖的网格坐标
   let corners: [number, number][] = [];
+  
+  // 从 groundSize 计算 gridSize (两者一致)
+  const gridSize = config.groundSize[0];
   
   // 检查物体类型并计算其覆盖的区域
   if (object.geometry instanceof THREE.BoxGeometry) {
@@ -77,13 +91,21 @@ export function calculateObjectGridPositions(
     ];
   } else {
     // 其他类型的物体，只使用中心点
-    const gridPos = worldToGridPosition(worldPos[0], worldPos[2], config);
+    const gridPos = worldToGridPosition(
+      worldPos[0], 
+      worldPos[2], 
+      gridSize
+    );
     return [gridPos];
   }
   
   // 将每个角转换为网格坐标
   corners.forEach(([x, z]) => {
-    const gridPos = worldToGridPosition(x, z, config);
+    const gridPos = worldToGridPosition(
+      x, 
+      z, 
+      gridSize
+    );
     
     // 检查是否已经添加过这个网格坐标
     const posKey = `${gridPos[0]},${gridPos[1]}`;

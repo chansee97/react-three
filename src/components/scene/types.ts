@@ -2,16 +2,7 @@ import * as THREE from 'three';
 
 // 场景配置接口
 export interface SceneConfig {
-  gridSize: number;
-  divisions: number;
-  baseColor: string;
-  startColor?: string;
-  endColor?: string;
-  pathColor?: string;
-  obstacleColor?: string;
-  hoverColor?: string;
-  groundSize?: [number, number];
-  groundPosition?: [number, number, number];
+  groundSize: [number, number]; // 必填，用于地面和网格大小
 }
 
 // 网格状态类型
